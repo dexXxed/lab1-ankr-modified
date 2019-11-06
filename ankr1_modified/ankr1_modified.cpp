@@ -268,6 +268,7 @@ int main() {
 		system("PAUSE");
 		return 0;
 	}
+
 	catch (exception & error) {
 		cout << "Error message: " << error.what() << endl;
 		cout << "System Error Code: " << GetLastError() << endl;
