@@ -265,6 +265,7 @@ int main() {
 			print_information_about_csp(prov.prov_type, prov.name, map);
 		}
 
+
 		system("PAUSE");
 		return 0;
 	}
