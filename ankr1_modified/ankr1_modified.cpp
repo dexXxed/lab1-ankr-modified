@@ -27,7 +27,7 @@ bool try_get_providers(int index, vector<st_prov>& list) {
 	st_prov prov{};
 	prov.name = new char[byte_count];
 
-	if (!CryptEnumProviders(index, nullptr, 0, &(prov.prov_type), (LPWSTR) prov.name,
+	if (!CryptEnumProviders(index, nullptr, 0, &(prov.prov_type),  prov.name,
 		&byte_count)) {
 		if (GetLastError() == ERROR_NO_MORE_ITEMS)
 			cout << "Got the end of a list (2)" << endl;
@@ -62,21 +62,21 @@ void get_information_about_csp(const DWORD csp_type_code, LPSTR csp_name, vector
 
 	wcout << "Begin work with [" << csp_type_code << "] " << (LPCTSTR)(csp_name) << endl;
 
-	if (!CryptAcquireContext(&handle, nullptr, (LPWSTR) csp_name,
+	if (!CryptAcquireContext(&handle, nullptr,  csp_name,
 		csp_type_code, 0)) {
 		if (GetLastError() == NTE_BAD_KEYSET) {
 			cout << "Creating " << keycase_name << " keycontainer" << endl;
 
 			CryptReleaseContext(handle, 0);
 
-			if (!CryptAcquireContext(&handle, (LPWSTR)keycase_name.c_str(), (LPWSTR)csp_name, csp_type_code, CRYPT_NEWKEYSET)) {
+			if (!CryptAcquireContext(&handle, keycase_name.c_str(), csp_name, csp_type_code, CRYPT_NEWKEYSET)) {
 				if (GetLastError() == NTE_EXISTS) {
 					cout << "Key set " << keycase_name << " already exists, trying to open" << endl;
 					CryptReleaseContext(handle, 0);
 
 					if (!CryptAcquireContext(&handle,
-						(LPWSTR)keycase_name.c_str(),
-						(LPWSTR)(csp_name), csp_type_code, 0))
+						keycase_name.c_str(),
+						(csp_name), csp_type_code, 0))
 						throw "In get_information_about_csp with existing key container";
 
 				}
@@ -106,8 +106,8 @@ void get_information_about_csp(const DWORD csp_type_code, LPSTR csp_name, vector
 
 		CryptReleaseContext(handle, 0);
 
-		if (!CryptAcquireContext(&handle, (LPWSTR)(keycase_name.c_str()),
-			reinterpret_cast<LPWSTR> (csp_name), csp_type_code, 0))
+		if (!CryptAcquireContext(&handle,(keycase_name.c_str()),
+			 (csp_name), csp_type_code, 0))
 			throw "In get_information_about_csp with existing key container";
 	}
 
@@ -186,7 +186,7 @@ void print_information_about_csp(const DWORD csp_type, LPSTR csp_name, vector<pa
 				cout << "|" << setw(10) << it.first.dwDefaultLen;
 				cout << "|" << setw(10) << it.first.dwMinLen;
 				cout << "|" << setw(10) << it.first.dwMaxLen;
-				if (GET_ALG_CLASS(it.first.aiAlgid) == ALG_CLASS_DATA_ENCRYPT || GET_ALG_CLASS(it.first.aiAlgid) == ALG_CLASS_SIGNATURE)
+				if ((GET_ALG_CLASS(it.first.aiAlgid) == ALG_CLASS_DATA_ENCRYPT || GET_ALG_CLASS(it.first.aiAlgid) == ALG_CLASS_SIGNATURE ) && it.second != 3435973836)
 					cout << "|" << setw(15) << it.second << setw(10) << "|" << endl;
 				else
 					cout << "|" << setw(15) << "No info" << setw(10) << "|" << endl;
