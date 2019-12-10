@@ -210,7 +210,7 @@ void get_csp_handler(DWORD csp_type, LPTSTR csp_name, LPCTSTR container_name, HC
 			wcout << "Creating " << container_name << " key container" << endl;
 			CryptReleaseContext(handler, 0);
 
-			if (!CryptAcquireContext(&handler, container_name, csp_name, csp_type, CRYPT_NEWKEYSET)) {
+			if (!CryptAcquireContext(&handler, container_name, (LPCSTR) csp_name, csp_type, CRYPT_NEWKEYSET)) {
 
 				if (GetLastError() == NTE_EXISTS) {
 					CryptReleaseContext(handler, 0);
@@ -247,7 +247,7 @@ int main() {
 		cout << "Enter name of container, which will be created: ";
 		cin >> name;
 
-		LPCTSTR container_name = LPCTSTR (name.c_str()); // The name of the container.
+		LPCTSTR container_name = LPCSTR (name.c_str()); // The name of the container.
 		vector<st_prov> providers;
 		vector<pair<PROV_ENUMALGS_EX, DWORD>> map;
 
